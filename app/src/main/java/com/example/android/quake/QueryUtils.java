@@ -59,9 +59,8 @@ public final class QueryUtils {
                 JSONObject properties = arrayElement.getJSONObject("properties");
                 String mag = properties.getString("mag");
                 String place = properties.getString("place");
-                String time = properties.getString("time");
+                Long time = properties.getLong("time");
                 earthquakes.add(new Earthquake(mag , place , time));
-                Log.v("The Array ------>", ((Earthquake)earthquakes.get(i)).toString());
             }
 
 

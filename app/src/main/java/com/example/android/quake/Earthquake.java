@@ -10,9 +10,9 @@ public class Earthquake extends Object{
     private String mLocation;
 
     // @param date , the  date of the earthquake
-    private String mDate;
+    private Long mDate;
 
-    public Earthquake(String mag, String loc, String date) {
+    public Earthquake(String mag, String loc, Long date) {
         this.mMagnitude = mag;
         this.mLocation = loc;
         this.mDate = date;
@@ -26,7 +26,7 @@ public class Earthquake extends Object{
         this.mLocation = location;
     }
 
-    public void setDate(String date) {
+    public void setDate(Long date) {
         this.mDate = date;
     }
 
@@ -38,7 +38,7 @@ public class Earthquake extends Object{
         return mLocation;
     }
 
-    public String getDate() {
+    public Long getDate() {
         return mDate;
     }
 

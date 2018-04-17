@@ -10,7 +10,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by Mansour on 16-Apr-18.
@@ -35,6 +39,8 @@ public class EqAdapter<E extends Object> extends ArrayAdapter<Earthquake>{
         // Get the {@link Word} object located at this position in the list
         final Earthquake currentWord = getItem(position);
 
+        //Declare and assign values to TextViews of Magnitude, Location and Date
+
         TextView magValue = (TextView) listItemView.findViewById(R.id.mag);
         magValue.setText(currentWord.getMagnitude());
 
@@ -42,9 +48,21 @@ public class EqAdapter<E extends Object> extends ArrayAdapter<Earthquake>{
         locValue.setText(currentWord.getLocation());
 
         TextView dateValue = (TextView) listItemView.findViewById(R.id.date);
-        dateValue.setText(currentWord.getDate());
 
-        // Return the whole list item layout (containing 2 TextViews)
+        Long timeInM =  currentWord.getDate();
+        Date dateObject = new Date(timeInM);
+
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM DD, yyyy", Locale.getDefault());
+        String dateToDisplay = dateFormatter.format(dateObject);
+        dateValue.setText(dateToDisplay);
+
+        TextView timeValue = (TextView) listItemView.findViewById(R.id.time);
+        SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+        String timeToDisplay = timeFormatter.format(dateObject);
+        timeValue.setText(timeToDisplay);
+
+        // Return the whole list item layout (containing 3 TextViews)
         // so that it can be shown in the ListView
         return listItemView;
     }
