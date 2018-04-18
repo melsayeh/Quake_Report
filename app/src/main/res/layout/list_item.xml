@@ -11,22 +11,38 @@
         android:layout_height="match_parent"
         android:layout_weight="3"
         android:gravity="center_vertical|left"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="16dp"
         android:textSize="20sp"
         android:textStyle="bold"/>
-
-    <TextView
-        android:id="@+id/loc"
-        android:layout_width="0sp"
-        android:layout_height="match_parent"
-        android:layout_weight="5"
-        android:textSize="15sp"
-        android:gravity="center_vertical"/>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="5"
+        android:layout_weight="7"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/offset"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="10sp"
+            android:gravity="left|bottom"/>
+        <TextView
+            android:id="@+id/loc"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:gravity="left|top"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
         android:orientation="vertical"
         android:layout_marginRight="8dp">
         <TextView
@@ -34,14 +50,14 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textSize="15sp"
+            android:textSize="10sp"
             android:gravity="right|bottom"/>
         <TextView
             android:id="@+id/time"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textSize="15sp"
+            android:textSize="10sp"
             android:gravity="right|top"/>
 
     </LinearLayout>

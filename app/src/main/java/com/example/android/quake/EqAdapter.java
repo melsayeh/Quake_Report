@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.sql.Time;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,10 +43,21 @@ public class EqAdapter<E extends Object> extends ArrayAdapter<Earthquake>{
         //Declare and assign values to TextViews of Magnitude, Location and Date
 
         TextView magValue = (TextView) listItemView.findViewById(R.id.mag);
-        magValue.setText(currentWord.getMagnitude());
+        DecimalFormat formatter = new DecimalFormat("0.0");
+        String output = formatter.format(currentWord.getMagnitude());
+        magValue.setText(output);
 
         TextView locValue = (TextView) listItemView.findViewById(R.id.loc);
-        locValue.setText(currentWord.getLocation());
+        TextView offsetVal = (TextView) listItemView.findViewById(R.id.offset);
+
+        if (currentWord.getLocation().contains(" of ")) {
+            String[] split = currentWord.getLocation().split(" of ");
+            locValue.setText(split[1]);
+            offsetVal.setText(split[0] + " of");
+        }else {
+            locValue.setText(currentWord.getLocation());
+            offsetVal.setText("Near the");
+        }
 
         TextView dateValue = (TextView) listItemView.findViewById(R.id.date);
 

@@ -4,7 +4,7 @@ package com.example.android.quake;
 public class Earthquake extends Object{
 
     // @param magnitude earth quake magnitude
-    private String mMagnitude;
+    private Double mMagnitude;
 
     // @param city location of earthquake
     private String mLocation;
@@ -12,13 +12,13 @@ public class Earthquake extends Object{
     // @param date , the  date of the earthquake
     private Long mDate;
 
-    public Earthquake(String mag, String loc, Long date) {
+    public Earthquake(Double mag, String loc, Long date) {
         this.mMagnitude = mag;
         this.mLocation = loc;
         this.mDate = date;
     }
 
-    public void setMagnitude(String magnitude) {
+    public void setMagnitude(Double magnitude) {
         this.mMagnitude = magnitude;
     }
 
@@ -30,7 +30,7 @@ public class Earthquake extends Object{
         this.mDate = date;
     }
 
-    public String getMagnitude() {
+    public Double getMagnitude() {
         return mMagnitude;
     }
 
