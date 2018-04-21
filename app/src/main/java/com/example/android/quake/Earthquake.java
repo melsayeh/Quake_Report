@@ -1,10 +1,14 @@
 package com.example.android.quake;
 
+/********************************************************/
+/* Defines new object type Earthquake that has 3 params */
+/********************************************************/
+
 
 public class Earthquake extends Object{
 
     // @param magnitude earth quake magnitude
-    private Double mMagnitude;
+    private double mMagnitude;
 
     // @param city location of earthquake
     private String mLocation;
@@ -12,13 +16,18 @@ public class Earthquake extends Object{
     // @param date , the  date of the earthquake
     private Long mDate;
 
-    public Earthquake(Double mag, String loc, Long date) {
+    // @param url , the webpage of the earthquake on USGS
+
+    private String mUrl;
+
+    public Earthquake(double mag, String loc, Long date , String url) {
         this.mMagnitude = mag;
         this.mLocation = loc;
         this.mDate = date;
+        this.mUrl = url;
     }
 
-    public void setMagnitude(Double magnitude) {
+    public void setMagnitude(double magnitude) {
         this.mMagnitude = magnitude;
     }
 
@@ -30,7 +39,11 @@ public class Earthquake extends Object{
         this.mDate = date;
     }
 
-    public Double getMagnitude() {
+    public void setUrl(String url) {
+        this.mUrl = url;
+    }
+
+    public double getMagnitude() {
         return mMagnitude;
     }
 
@@ -42,8 +55,8 @@ public class Earthquake extends Object{
         return mDate;
     }
 
-//    @Override
-//    public String toString(){
-//        return mMagnitude+"       "+mLocation+"    "+mDate;
-//    }
+    public String getUrl() {
+        return mUrl;
+    }
+
 }
