@@ -15,18 +15,18 @@
  */
 package com.example.android.quake;
 
-import android.os.AsyncTask;
+
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
+import android.content.AsyncTaskLoader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,114 +36,90 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-public class EarthquakeActivity extends AppCompatActivity {
-
+public class EarthquakeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<Earthquake>> {
+    private static final String WEBSITE = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2010-01-01&endtime=2018-08-08&minmagnitude=7.5";
+    private static final int EARTHQUAKE_LOADER_ID = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
 
-        //initiate the task and execute onCreate
-        QuakeAsyncTask task = new QuakeAsyncTask();
-        task.execute();
+        //Create Loader instance
+        LoaderManager loaderManager = getLoaderManager();
+        //initiate the loader when the activity starts up
+        loaderManager.initLoader(EARTHQUAKE_LOADER_ID,null, this);
     }
 
-    public void updateUi(ArrayList<Earthquake> getEarthquakes){
-        // Fetches {@link ArrayList} earthquake.
-        ArrayList<Earthquake> earthquakes = getEarthquakes;
-
-        // Find a reference to the {@link ListView} in the layout
-        ListView earthquakeListView = (ListView) findViewById(R.id.list);
-
-        // Create a new {@link ArrayAdapter} of earthquakes
-        EqAdapter<Earthquake> adapter = new EqAdapter<Earthquake>(this,  earthquakes);
-
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-        if (earthquakeListView != null) {
-            earthquakeListView.setAdapter(adapter);
-        }
+    @Override
+    public Loader<ArrayList<Earthquake>> onCreateLoader(int i, Bundle bundle) {
+        EarthqauakeLoader earthqauakeLoader = new EarthqauakeLoader(this,WEBSITE);
+        return earthqauakeLoader;
     }
 
-    /* Inherit {@link QuakeAsyncTask} from AsyncTask class */
-    public final class QuakeAsyncTask extends AsyncTask<URL,Void,ArrayList<Earthquake>> {
-        public static final String WEBSITE = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2012-01-01&endtime=2017-12-01&minmagnitude=5";
-
-        @Override
-        protected ArrayList<Earthquake> doInBackground(URL... urls) {
-            String jsonResponse = "";
-            ArrayList<Earthquake> earthquakes = null;
-            try {
-                URL url = new URL(WEBSITE);
-                //Fetch jsonRespone
-                jsonResponse = makeHttpRequest(url);
-            } catch (MalformedURLException e) {
-                Log.e("Main Activity", "Error with the URL" + e);
-            } catch (IOException ioe) {
-                Log.e("Main Activity", "IOException occurs: " + ioe);
-            }
-            //earthquake data extracted from jsonResponse
-            earthquakes = extractEarthquakes(jsonResponse);
-            return earthquakes;
+    //Update the UI after finishing execution of the task
+    @Override
+    public void onLoadFinished(Loader<ArrayList<Earthquake>> loader, ArrayList<Earthquake> earthquakes){
+        if(earthquakes==null) {
+            return;
         }
+        updateUi(earthquakes);
+    }
 
-        //Update the UI after finishing execution of the task
-        @Override
-        protected void onPostExecute(ArrayList<Earthquake> earthquakes){
-            updateUi(earthquakes);
-        }
+    @Override
+    public void onLoaderReset(Loader<ArrayList<Earthquake>> loader){
 
-        /*
+    }
+
+    /*
         Configure and initiate the connection to the URL
         Get input stream from the URL
         Fetch JSON from the stream
         */
-        private String makeHttpRequest(URL url) throws IOException {
-            String jsonResponse = "";
-            if (url == null)
-                return jsonResponse;
-
-            HttpURLConnection urlConnection = null;
-            InputStream inputStream = null;
-            try {
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.setReadTimeout(10000 /* milliseconds */);
-                urlConnection.setConnectTimeout(15000 /* milliseconds */);
-                urlConnection.connect();
-                inputStream = urlConnection.getInputStream();
-                if (urlConnection.getResponseCode() == 200) /* If the connection is successful */
-                    jsonResponse = readFromStream(inputStream);
-
-            } catch (IOException e) {
-                Log.e("Main Activity", "Error opening connection" + e);
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            }
-            return jsonResponse;
+    static String makeHttpRequest(URL url) throws IOException {
+        String jsonResponse = "";
+        if (url == null) {
+            return null;
         }
+        HttpURLConnection urlConnection = null;
+        InputStream inputStream = null;
+        try {
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setReadTimeout(10000 /* milliseconds */);
+            urlConnection.setConnectTimeout(15000 /* milliseconds */);
+            urlConnection.connect();
+            inputStream = urlConnection.getInputStream();
+            if (urlConnection.getResponseCode() == 200) /* If the connection is successful */
+                jsonResponse = readFromStream(inputStream);
 
-        private String readFromStream(InputStream inputStream) throws IOException {
-            StringBuilder builder = new StringBuilder();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
-            BufferedReader reader = new BufferedReader(inputStreamReader);
-            String line = reader.readLine();
-            while (line != null) {
-                builder.append(line);
-                line = reader.readLine();
+        } catch (IOException e) {
+            Log.e("Main Activity", "Error opening connection" + e);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
             }
-            return builder.toString();
+            if (inputStream != null) {
+                inputStream.close();
+            }
         }
+        return jsonResponse;
     }
 
-    public ArrayList<Earthquake> extractEarthquakes(String jResponse) {
+    static private String readFromStream(InputStream inputStream) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        String line = reader.readLine();
+        while (line != null) {
+            builder.append(line);
+            line = reader.readLine();
+        }
+        return builder.toString();
+    }
+
+    static public ArrayList<Earthquake> extractEarthquakes(String jResponse) {
 
         // Create an empty ArrayList that we can start adding earthquakes to
         ArrayList<Earthquake> earthquakes = new ArrayList<Earthquake>();
@@ -179,5 +155,22 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         // Return the list of earthquakes
         return earthquakes;
+    }
+
+    public void updateUi(ArrayList<Earthquake> getEarthquakes){
+        // Fetches {@link ArrayList} earthquake.
+        ArrayList<Earthquake> earthquakes = getEarthquakes;
+
+        // Find a reference to the {@link ListView} in the layout
+        ListView earthquakeListView = (ListView) findViewById(R.id.list);
+
+        // Create a new {@link ArrayAdapter} of earthquakes
+        EqAdapter<Earthquake> adapter = new EqAdapter<Earthquake>(this,  earthquakes);
+
+        // Set the adapter on the {@link ListView}
+        // so the list can be populated in the user interface
+        if (earthquakeListView != null) {
+            earthquakeListView.setAdapter(adapter);
+        }
     }
 }
