@@ -3,24 +3,28 @@ package com.example.android.quake;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 
 public class EarthqauakeLoader extends AsyncTaskLoader<ArrayList<Earthquake>>{
     private String mUrl;
+    static private Boolean checkInternet;
+
     public EarthqauakeLoader(Context context, String url) {
         super(context);
         mUrl = url;
@@ -30,6 +34,7 @@ public class EarthqauakeLoader extends AsyncTaskLoader<ArrayList<Earthquake>>{
     public ArrayList<Earthquake> loadInBackground() {
         String jsonResponse = "";
         ArrayList<Earthquake> earthquakes = null;
+        checkInternet = isConnected();
         try {
             //Fetch jsonResponse
             jsonResponse = makeHttpRequest(new URL(mUrl));
@@ -46,7 +51,9 @@ public class EarthqauakeLoader extends AsyncTaskLoader<ArrayList<Earthquake>>{
 
     @Override
     protected void onStartLoading(){
+        Log.v("Verify Loader","******Loader action on start loading *****");
         forceLoad();
+
     }
 
     /*
@@ -59,6 +66,7 @@ public class EarthqauakeLoader extends AsyncTaskLoader<ArrayList<Earthquake>>{
         if (url == null) {
             return null;
         }
+        Log.v("Verify Loader","********************** HTTP Request ******************");
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         try {
@@ -135,5 +143,18 @@ public class EarthqauakeLoader extends AsyncTaskLoader<ArrayList<Earthquake>>{
 
         // Return the list of earthquakes
         return earthquakes;
+    }
+
+    static public Boolean isConnected() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("cnn.com");
+            return !ipAddr.equals("");
+        } catch (UnknownHostException e) {
+            return false;
+        }
+    }
+
+    static public Boolean getCheckInternet(){
+        return checkInternet;
     }
 }
